@@ -8,6 +8,7 @@ from ping3 import ping
 socket.setdefaulttimeout(2)
 ipaddr = ""
 bander = ""
+ip_list = [] #用于写入IP地址
 port = 0
 
 def s_content(overtime,__ipaddr__,__port__):
@@ -19,12 +20,6 @@ def s_content(overtime,__ipaddr__,__port__):
     banner = str(result.decode())
     print(banner)
     return banner
-
-def bander_test(__bander__):
-    if str("2.3.4") in __bander__:
-        print(ipaddr,"存在vsftp漏洞！")
-    else:
-        print(ipaddr,"未扫描到漏洞！")
 
 if __name__ == "__main__":
     while True:
@@ -44,20 +39,31 @@ if __name__ == "__main__":
                 valid = False
                 break
         if valid:
-            break
+            pass
         else:
             print("IP地址不合法！请输入正确的地址（0~255.0~255.0~255.0~255）")
             continue
 
-    if ping(ipaddr,timeout=2) is not None:
-        pass
-    else:
-        ack = input("尝试ping主机失败，如果要继续请输入Y：")
-        if 'Y' in ack:
+        if ping(ipaddr,timeout=2) is not None:
             pass
         else:
-            print("程序终止。")
-            exit(-1)
+            ack = input("尝试ping主机失败，如果要继续请输入Y：")
+            if 'Y' in ack:
+                pass
+            else:
+                print("已忽略当前输入的IP。")
+                print(f"当前已被添加的地址：{ip_list}")
+                continue
+
+        ip_list.append(ipaddr)
+
+        ack = input("需要继续添加IP地址吗？（Y）")
+        if 'Y' in ack:
+            print(f"当前已被添加的地址：{ip_list}")
+            continue
+        else:
+            print(f"即将被使用的地址：{ip_list}")
+            break
 
     while True:
         try:
@@ -71,23 +77,24 @@ if __name__ == "__main__":
             print("请输入正确的端口号！")
             continue
 
-    for i in range(4):
-        try:
-            s = socket.socket()
-            if i + 1 == 4:
-                print("已达最大尝试次数,程序终止!")
-                exit(-1)
-            print(f"开始第{i + 1}次尝试。")
-            bander = s_content(2,ipaddr,port)
-            break
+    for ipaddr in ip_list:
+        i = 0
+        for i in range(3):
+            try:
+                s = socket.socket()
+                print(f"开始第{i + 1}次尝试。")
+                bander = s_content(2,ipaddr,port)
+                break
 
-        except socket.timeout:
-            print(f"连接{ipaddr}:{port}超时！")
-            continue
-        except Exception as e:
-            print(f"连接{ipaddr}:{port}时发生错误:",e)
-            continue
+            except socket.timeout:
+                print(f"连接{ipaddr}:{port}超时！")
+                continue
+            except Exception as e:
+                print(f"连接{ipaddr}:{port}时发生错误:",e)
+                continue
 
-    bander_test(bander)
+        print(f"{ipaddr}:{port}结束!")
+        print()
+
     exit(0)
 
