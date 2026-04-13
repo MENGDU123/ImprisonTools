@@ -4,11 +4,8 @@
 import os
 import socket
 import time
-<<<<<<< HEAD:bander.py
 import sys
-=======
 import threading
->>>>>>> develop:bander_thread.py
 from ping3 import ping
 
 
@@ -158,12 +155,6 @@ if __name__ == "__main__":
 
     for ipaddr in ip_list:
         print(f"{ipaddr}:{port}结束!")
-<<<<<<< HEAD:bander.py
         print()
 
     sys.exit(0)
-=======
->>>>>>> develop:bander_thread.py
-
-    print()
-    exit(0)
