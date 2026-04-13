@@ -4,7 +4,9 @@
 """
 import socket
 import time
+import threading
 from ping3 import ping
+
 
 socket.setdefaulttimeout(2)
 ipaddr = ""
@@ -14,13 +16,17 @@ port = 0
 
 def s_content(overtime,__ipaddr__,__port__):
     """socket连接"""
-    s.settimeout(overtime)
-    s.connect((__ipaddr__, __port__))
-    result = s.recv(1024)
-    s.close()
-    banner = str(result.decode())
-    print(banner)
-    return banner
+    try:
+        s = socket.socket()
+        s.settimeout(overtime)
+        s.connect((__ipaddr__, __port__))
+        result = s.recv(1024)
+        s.close()
+        banner = str(result.decode())
+        print(__ipaddr__,banner,sep=':')
+        return banner
+    except Exception as e:
+        return None
 
 def ipv4_test_1(__ipaddr__):
     #检查地址是否为点分十进制
@@ -112,24 +118,23 @@ if __name__ == "__main__":
             print("请输入正确的端口号！")
             continue
 
+    threads = []
+
     for ipaddr in ip_list:
-        i = 0
-        for i in range(3):
-            try:
-                s = socket.socket()
-                print(f"开始第{i + 1}次尝试。")
-                bander = s_content(2,ipaddr,port)
-                break
+        try:
+            print(f"开始尝试连接{ipaddr}:{port}。")
+            thread = threading.Thread(target=s_content, args=(2, ipaddr, port))
+            thread.daemon = True
+            thread.start()
+            threads.append(thread)
+        except Exception as e:
+            print(f"连接{ipaddr}:{port}时发生错误:",e)
 
-            except socket.timeout:
-                print(f"连接{ipaddr}:{port}超时！")
-                continue
-            except Exception as e:
-                print(f"连接{ipaddr}:{port}时发生错误:",e)
-                continue
+    for thread in threads:
+        thread.join(timeout=3)
 
+    for ipaddr in ip_list:
         print(f"{ipaddr}:{port}结束!")
-        print()
 
+    print()
     exit(0)
-
