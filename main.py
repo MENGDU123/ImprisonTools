@@ -58,11 +58,7 @@ def read_ip(__filepath__):
             sys.exit(-1)
         else:
             f = open(__filepath__, "r")
-        # try:
-        #     f = open("ip.txt", "r")
-        # except FileNotFoundError as __e:
-        #     print(f"发生错误,ip.txt文件不存在！{__e}")
-        #     sys.exit(-1)
+
         for _ in f.readlines():
             addr= _.strip("\n")
             print()
@@ -156,5 +152,6 @@ if __name__ == "__main__":
     for ipaddr in ip_list:
         print(f"{ipaddr}:{port}结束!")
         print()
+
 
     sys.exit(0)

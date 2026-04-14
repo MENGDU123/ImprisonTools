@@ -6,3 +6,4 @@ sumout.py
 .idea/
 ip.txt
 /crash_2026_4_13.zip
+__pycache__/
